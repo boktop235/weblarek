@@ -3,98 +3,81 @@ import { ProductList } from './components/Models/ProductList';
 import { Cart } from './components/Models/Cart';
 import { Buyer } from './components/Models/Buyer';
 import { apiProducts } from './utils/data';
-
-// Тестирование ProductList
-console.log('=== ТЕСТИРОВАНИЕ PRODUCTLIST ===');
+import { IProduct } from './types';
+import { ApiCommunication } from './components/Communication/ApiCommunication';
+import { Api } from './components/base/Api';
+import { API_URL, CDN_URL } from './utils/constants';
 
 const productsModel = new ProductList();
 productsModel.setItems(apiProducts.items);
 
-console.log('Массив товаров из каталога:', productsModel.getItems());
-console.log('Количество товаров в каталоге:', productsModel.getItems().length);
-
-// Тестируем получение товара по ID
-const product1 = productsModel.getItem('854cef69-976d-4c2a-a18c-2aa45046c390');
-console.log('Товар с id "854cef69-976d-4c2a-a18c-2aa45046c390":', product1);
-
-const product2 = productsModel.getItem('b06cde61-912f-4663-9751-09956c0eed67');
-console.log('Товар с id "b06cde61-912f-4663-9751-09956c0eed67":', product2);
-
-// Тестируем выбор товара для подробного просмотра
-productsModel.setSelectedItem(product1!);
-console.log('Выбранный товар для подробного просмотра:', productsModel.getSelectedItem());
-
-// Тестирование Cart
-console.log('\n=== ТЕСТИРОВАНИЕ CART ===');
+console.log("Массив товаров из каталога: ", productsModel.getItems());
 
 const cartModel = new Cart();
 
-console.log('Корзина пуста:', cartModel.getItemsCount() === 0);
-console.log('Количество товаров в пустой корзине:', cartModel.getItemsCount());
-console.log('Общая стоимость пустой корзины:', cartModel.getTotalPrice());
+const newProduct: IProduct = {
+    id: "5",
+    description: "Test product",
+    image: "testimage.png",
+    title: "Test product tittle",
+    category: "Test category",
+    price: 600
+};
 
-// Добавляем товары в корзину
-cartModel.addItem(apiProducts.items[0]); // +1 час в сутках
-cartModel.addItem(apiProducts.items[1]); // HEX-леденец
-cartModel.addItem(apiProducts.items[3]); // Фреймворк куки судьбы
+cartModel.addItem(newProduct);
+console.log("Добавлен тестовый новый продукт:", newProduct);
 
-console.log('Товары в корзине после добавления:', cartModel.getItems());
-console.log('Количество товаров в корзине:', cartModel.getItemsCount());
-console.log('Общая стоимость корзины:', cartModel.getTotalPrice());
+const selectedProductFromCatalog = productsModel.getItem("854cef69-976d-4c2a-a18c-2aa45046c390");
+if (selectedProductFromCatalog) {
+    productsModel.setSelectedItem(selectedProductFromCatalog);
+    cartModel.addItem(selectedProductFromCatalog);
+    console.log("Добавлен продукт из каталога, выбранный по id");
+} else {
+    console.log("Выбранный товар в каталоге отсутствует");
+}
 
-// Проверяем наличие товаров в корзине
-console.log('Товар с id "854cef69..." в корзине:', cartModel.contains('854cef69-976d-4c2a-a18c-2aa45046c390'));
-console.log('Товар с id "b06cde61..." в корзине:', cartModel.contains('b06cde61-912f-4663-9751-09956c0eed67'));
+const secondProductFromCatalog = productsModel.getItems()[1];
+cartModel.addItem(secondProductFromCatalog);
+console.log("Добавлен второй продукт из каталога:", secondProductFromCatalog);
 
-// Удаляем товар
-cartModel.removeItem(apiProducts.items[1]);
-console.log('Товары в корзине после удаления HEX-леденца:', cartModel.getItems());
-console.log('Количество товаров после удаления:', cartModel.getItemsCount());
-console.log('Общая стоимость после удаления:', cartModel.getTotalPrice());
+const buyer1 = new Buyer();
 
-// Очищаем корзину
-cartModel.clear();
-console.log('Корзина после очистки:', cartModel.getItems());
-console.log('Количество товаров после очистки:', cartModel.getItemsCount());
+buyer1.setData({
+    payment: 'card',
+    email: 'buyer1@gmail.com',
+    phone: '89005553535',
+    address: 'Test City, 1, 100000'
+})
 
-// Тестирование Buyer
-console.log('\n=== ТЕСТИРОВАНИЕ BUYER ===');
+console.log("Добавлен новый покупатель со всеми данными:", buyer1.getData());
 
-const buyerModel = new Buyer();
+const buyer2 = new Buyer();
+buyer2.setData({
+    email: 'buyer2@icloud.com',
+    address: 'Test City, 2, 20000'
+})
 
-console.log('Данные покупателя по умолчанию:', buyerModel.getData());
+console.log("Добавлен новый покупатель с частичными данных:", buyer2.getData());
 
-// Проверяем валидацию пустых данных
-console.log('Валидация пустых данных:', buyerModel.validate());
+const api = new Api(API_URL);
+const apiCommunication = new ApiCommunication(api);
 
-// Частичное обновление данных
-buyerModel.setData({ email: 'web-developer@example.com' });
-console.log('Данные после установки email:', buyerModel.getData());
+try {
+    const catalog = await apiCommunication.getCatalog();
+    console.log("Получен каталог с сервера через апи-коммуникатор:", catalog);
+} catch (error) {
+    console.error("Ошибка получения каталога:", error);
+}
 
-buyerModel.setData({ phone: '+79991234567', address: 'Москва, Кремль' });
-console.log('Данные после установки телефона и адреса:', buyerModel.getData());
-
-// Проверяем валидацию частично заполненных данных
-console.log('Валидация частично заполненных данных:', buyerModel.validate());
-
-// Заполняем все данные
-buyerModel.setData({ 
-  payment: 'card' as const, 
-  email: 'web-developer@example.com',
-  phone: '+79991234567',
-  address: 'Москва, Кремль'
-});
-console.log('Все данные покупателя:', buyerModel.getData());
-console.log('Валидация полностью заполненных данных:', buyerModel.validate());
-
-// Тестируем частичное обновление (не должно удалять другие поля)
-buyerModel.setData({ phone: '+79998887766' });
-console.log('Данные после обновления только телефона:', buyerModel.getData());
-
-// Очистка данных
-buyerModel.clear();
-console.log('Данные после очистки:', buyerModel.getData());
-console.log('Валидация после очистки:', buyerModel.validate());
-
-console.log('\n=== ВСЕ ТЕСТЫ ЗАВЕРШЕНЫ ===');
-console.log('=== МОДЕЛИ ДАННЫХ РАБОТАЮТ КОРРЕКТНО ===');
+try {
+    const catalog = await apiCommunication.getCatalog();
+    const catalogWithFullPathImages = catalog.items.map(product => ({
+        ...product, 
+        image: `${CDN_URL}/${product.image}`
+    }));
+    console.log("Сформированы полные пути изображений товаров в каталоге", catalogWithFullPathImages);
+    productsModel.setItems(catalogWithFullPathImages);
+    console.log("Сформирован каталог с полными путями к изображениям товаров", productsModel.getItems());
+} catch (error) {
+    console.error("Ошибка формирования полных путей изображений товаров в каталоге", error);
+}

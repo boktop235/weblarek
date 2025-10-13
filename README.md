@@ -198,12 +198,4 @@ Presenter - презентер содержит основную логику п
 `getCatalog()` - запрос на эндпоинт /product/ - возвращает массив товаров (использует метод get класса Api)
 `createOrder()` - на эндпоинт /order/ - в теле данные о покупателе и выбранных товарах (использует метод post класса Api)
 
-P.S. В интерфейсе IOrder и IOrderResult пока указаны временные данные!
-Тело запроса POST для order согласно коллекции: 
-- payment: string,
-- email: string, 
-- phone: string, 
-- address: string,
-- total: number,
-- items: string[]
 

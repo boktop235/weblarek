@@ -43,3 +43,8 @@ export interface IOrderResult {
   id: string;
   total: number;
 }
+
+export interface IProductListResponse {
+  total: number;
+  items: IProduct[];
+}
