@@ -15,7 +15,11 @@ export class Buyer {
     if (data.address !== undefined) this._address = data.address;
   }
 
-  getData(): IBuyer {
+  getData(): IBuyer | null {
+    if (!this._email && !this._phone && !this._address && this._payment === 'card') {
+      return null;
+    }
+    
     return {
       payment: this._payment,
       email: this._email,
@@ -29,6 +33,30 @@ export class Buyer {
     this._email = '';
     this._phone = '';
     this._address = '';
+  }
+
+  sumAddressErrors(): {[key: string]: string} {
+    const error: {[key: string]: string} = {};
+
+    if (!this._address || this._address.trim() === '') {
+      error.address = 'Необходимо указать адрес';
+    }
+    
+    return error;
+  }
+
+  sumContactsErrors(): {[key: string]: string} {
+    const error: {[key: string]: string} = {};
+
+    if (!this._email || !this._email.includes('@')) {
+      error.email = 'Введите корректный email';
+    }
+    
+    if (!this._phone || this._phone.trim() === '') {
+      error.phone = 'Введите телефон';
+    }
+
+    return error;
   }
 
   validate(): IBuyerValidationResult {

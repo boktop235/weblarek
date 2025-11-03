@@ -23,18 +23,7 @@ export interface IBuyer {
   address: string;
 }
 
-export interface IBuyerValidationResult {
-  payment?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-}
-
-export interface IOrder {
-  payment: TPayment;
-  email: string;
-  phone: string;
-  address: string;
+export interface IOrder extends IBuyer {
   total: number;
   items: string[];
 }
@@ -47,4 +36,39 @@ export interface IOrderResult {
 export interface IProductListResponse {
   total: number;
   items: IProduct[];
+}
+
+export interface ICardData {
+  id: string;
+  title: string;
+  price: number;
+  category: string;
+  image: string;
+  description?: string;
+}
+
+export interface IBasketItem {
+  id: string;
+  title: string;
+  price: number;
+  index: number;
+}
+
+export interface IFormActions {
+  onSubmit: () => void;
+}
+
+export interface ISuccessActions {
+  onClose: () => void;
+}
+
+export interface ICardActions {
+  onClick: (id: string) => void;
+  onAddToCart: (id: string) => void;
+  onRemoveFromCart: (id: string) => void;
+}
+
+export interface IEvents {
+  emit: (event: string, data?: any) => void;
+  on: (event: string, callback: (data?: any) => void) => void;
 }
