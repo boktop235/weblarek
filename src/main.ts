@@ -19,7 +19,6 @@ import { Success } from './components/Views/Success';
 import { Modal } from './components/Views/Modal';
 import { IOrder} from './types';
 
-// Инициализация событий
 const events = new EventEmitter();
 
 // Модели
@@ -36,7 +35,6 @@ let header: Header;
 let gallery: Gallery;
 let modal: Modal;
 
-// Шаблоны
 let cardCatalogTemplate: HTMLTemplateElement;
 let cardPreviewTemplate: HTMLTemplateElement;
 let basketTemplate: HTMLTemplateElement;
@@ -45,17 +43,13 @@ let formOrderTemplate: HTMLTemplateElement;
 let formContactsTemplate: HTMLTemplateElement;
 let successTemplate: HTMLTemplateElement;
 
-// Инициализация приложения после загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {
-    // Инициализация View компонентов
     header = new Header(ensureElement<HTMLElement>('.header'), events);
     gallery = new Gallery(ensureElement<HTMLElement>('.gallery'));
     
-    // Инициализация Modal с контейнером и events
     const modalContainer = ensureElement<HTMLElement>('#modal-container');
     modal = new Modal(modalContainer, events);
 
-    // Инициализация шаблонов
     cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
     cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
     basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
@@ -64,23 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
     formContactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
     successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
-    // Загрузка каталога с сервера
-    // Загрузка каталога с сервера
-    // Загрузка каталога с сервера
 apiCommunication.getCatalog()
     .then(catalog => {
-        console.log('🔗 1. Данные с сервера:', catalog);
         
         const productsWithImages = catalog.items.map(product => {
-            // ИСПРАВЬТЕ ФОРМИРОВАНИЕ URL - уберите лишний слеш
             const imagePath = product.image.startsWith('/') ? product.image.slice(1) : product.image;
             const imageUrl = `${CDN_URL}/${imagePath}`;
-            
-            console.log(`🖼️ Картинка для "${product.title}":`, {
-                original: product.image,
-                fullUrl: imageUrl,
-                productId: product.id
-            });
             
             return {
                 ...product,
@@ -88,19 +71,13 @@ apiCommunication.getCatalog()
             };
         });
         
-        console.log('🔗 2. Данные с изображениями:', productsWithImages);
         
         productsModel.setItems(productsWithImages);
         events.emit('catalog:changed');
     })
-    .catch(error => {
-        console.error('Ошибка загрузки каталога:', error);
-    });
 
     header.counter = cartModel.getItems().length;
 });
-
-// Обработчики событий
 
 // Обновление каталога товаров
 events.on('catalog:changed', () => {
@@ -125,8 +102,7 @@ events.on('card:select', (event: any) => {
         ...product, 
         inCart: productInCart 
     });
-    
-    // Исправленный вызов для нового Modal
+
     modal.content = cardElement;
     modal.open();
 });
@@ -148,7 +124,6 @@ events.on('card:remove-product', (event: any) => {
     const product = productsModel.getItem(id);
     if (!product) return;
     
-    // Передаем объект продукта, а не id
     cartModel.removeItem(product);
     
     header.counter = cartModel.getItems().length;
@@ -173,12 +148,11 @@ events.on('cart:open', () => {
     basket.total = basketItems.reduce((sum, item) => sum + (item.price || 0), 0);
     basket.buttonDisabled = basketItems.length === 0;
     
-    // Исправленный вызов для нового Modal
     modal.content = basket.render();
     modal.open();
 });
 
-// Оформление заказа (форма оплаты и адреса в модалке)
+// Оформление заказа 
 events.on('cart:order', () => {
     const formOrder = new FormOrder(cloneTemplate(formOrderTemplate), {
         onSubmit: () => {
@@ -193,8 +167,7 @@ events.on('cart:order', () => {
     if (buyerData && buyerData.address) {
         formOrder.address = buyerData.address;
     }
-    
-    // Исправленный вызов для нового Modal
+
     modal.content = formOrder.render();
     modal.open();
 });
@@ -234,7 +207,6 @@ events.on('cart:contacts', () => {
         formContacts.phone = buyerData.phone;
     }
     
-    // Исправленный вызов для нового Modal
     modal.content = formContacts.render();
     modal.open();
 });
@@ -251,7 +223,6 @@ events.on('cart:success', (event: any) => {
     const total = typeof event === 'number' ? event : event.total;
     success.total = total;
     
-    // Исправленный вызов для нового Modal
     modal.content = success.render();
     modal.open();
 });

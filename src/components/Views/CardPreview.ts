@@ -1,9 +1,8 @@
 import { Card } from './Card';
 import { ensureElement } from '../../utils/utils';
-import { categoryMap } from '../../utils/constants';
 
 export class CardPreview extends Card<any> {
-    protected _image: HTMLImageElement; // Измените на HTMLImageElement
+    protected _image: HTMLImageElement; 
     protected _category: HTMLElement;
     protected _description: HTMLElement;
     protected _button: HTMLButtonElement;
@@ -12,7 +11,7 @@ export class CardPreview extends Card<any> {
 
     constructor(container: HTMLElement, protected events: any) {
         super(container);
-        this._image = ensureElement<HTMLImageElement>('.card__image', container); // HTMLImageElement
+        this._image = ensureElement<HTMLImageElement>('.card__image', container); 
         this._category = ensureElement<HTMLElement>('.card__category', container);
         this._description = ensureElement<HTMLElement>('.card__text', container);
         this._button = ensureElement<HTMLButtonElement>('.card__button', container);
@@ -33,7 +32,6 @@ export class CardPreview extends Card<any> {
     }
 
     set image(value: string) {
-        // Используйте setImage как в эталонном, а не backgroundImage
         this.setImage(this._image, value, this.title);
     }
 

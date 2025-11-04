@@ -19,7 +19,6 @@ export abstract class Card<T> extends Component<T> {
         this._price.textContent = value + ' синапсов';
     }
 
-    // ДОБАВЬТЕ ЭТОТ МЕТОД
     protected setImage(element: HTMLImageElement, src: string, alt?: string): void {
         element.src = src;
         if (alt) {

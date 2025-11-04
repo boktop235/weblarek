@@ -25,17 +25,11 @@ export class CardCatalog extends Card<TCardCatalog> {
     render(data: TCardCatalog): HTMLElement {
         console.log('🎴 Rendering card:', data.title, 'image:', data.image);
         this.id = data.id;
-        
-        // Устанавливаем все свойства напрямую
         this.title = data.title;
         this.category = data.category;
-        
-        // ПРЯМАЯ установка картинки
         console.log('🖼️ Direct image assignment:', data.image);
         this.cardImage.src = data.image;
         this.cardImage.alt = data.title;
-        
-        // Принудительные стили
         this.cardImage.style.display = 'block';
         this.cardImage.style.visibility = 'visible';
         this.cardImage.style.width = '100%';

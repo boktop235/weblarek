@@ -4,7 +4,7 @@ import { ensureElement } from '../../utils/utils';
 export class CardBasket extends Card<any> {
     protected _index: HTMLElement;
     protected _deleteButton: HTMLButtonElement;
-    protected _id!: string; // Добавляем свойство для id
+    protected _id!: string; 
 
     constructor(container: HTMLElement, protected events: any) {
         super(container);
@@ -14,9 +14,8 @@ export class CardBasket extends Card<any> {
         this.setupEventListeners();
     }
 
-    // Добавляем метод render для сохранения id
     render(data: any): HTMLElement {
-        this._id = data.id; // Сохраняем id
+        this._id = data.id; 
         return super.render(data);
     }
 
@@ -26,13 +25,11 @@ export class CardBasket extends Card<any> {
 
     private setupEventListeners(): void {
         this._deleteButton.addEventListener('click', (event) => {
-            event.stopPropagation(); // Важно: предотвращаем всплытие
-            console.log('🗑️ Delete button clicked, id:', this._id);
+            event.stopPropagation(); 
+            
             
             if (this._id) {
                 this.events.emit('card:remove-product', this._id);
-            } else {
-                console.error('❌ No id for removal');
             }
         });
     }
