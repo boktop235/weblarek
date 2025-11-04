@@ -8,10 +8,9 @@ export class Basket extends Component<any> {
 
     constructor(container: HTMLElement, protected events: any) {
         super(container);
-        
-        // Используйте более конкретный селектор для кнопки
+
         this._list = ensureElement<HTMLElement>('.basket__list', container);
-        this._button = ensureElement<HTMLButtonElement>('.basket__button', container); // или '.modal__actions .button'
+        this._button = ensureElement<HTMLButtonElement>('.basket__button', container); 
         this._price = ensureElement<HTMLElement>('.basket__price', container);
         
         this.setupEventListeners();

@@ -7,7 +7,6 @@ export class Header extends Component<any> {
     constructor(container: HTMLElement, protected events: any) {
         super(container);
         
-        // Отложенная инициализация - после загрузки DOM
         setTimeout(() => {
             this.initialize();
         }, 0);
@@ -15,9 +14,8 @@ export class Header extends Component<any> {
 
     private initialize(): void {
         try {
-            // ИСПРАВЬТЕ СЕЛЕКТОРЫ НА ПРАВИЛЬНЫЕ
-            this._counter = this.container.querySelector('.header__basket-counter'); // было .header__cart-counter
-            this._basket = this.container.querySelector('.header__basket'); // было .header__cart-button
+            this._counter = this.container.querySelector('.header__basket-counter'); 
+            this._basket = this.container.querySelector('.header__basket'); 
             
             if (this._basket) {
                 this._basket.addEventListener('click', () => {

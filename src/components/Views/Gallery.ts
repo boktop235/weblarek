@@ -4,7 +4,6 @@ export class Gallery {
     private catalogElement: HTMLElement;
 
     constructor(private container: HTMLElement) {
-        // Просто используем переданный контейнер, так как он УЖЕ является .gallery
         this.catalogElement = container;
     }
 
