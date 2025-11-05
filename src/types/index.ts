@@ -72,3 +72,15 @@ export interface IEvents {
   emit: (event: string, data?: any) => void;
   on: (event: string, callback: (data?: any) => void) => void;
 }
+
+export interface IFormOrderActions {
+    onAddressInput?: (address: string) => void;
+    onSubmit?: () => void;
+    onPaymentSelect?: (payment: 'card' | 'cash') => void;
+}
+
+export interface IFormContactsActions {
+    onEmailInput?: (email: string) => void;
+    onPhoneInput?: (phone: string) => void;
+    onSubmit?: () => void;
+}

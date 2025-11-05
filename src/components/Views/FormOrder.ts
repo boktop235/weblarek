@@ -1,14 +1,14 @@
 import { Form } from './Form'; 
 import { ensureElement } from '../../utils/utils'; 
-import { IFormActions } from '../../types';
+import { IFormOrderActions } from '../../types';
 
-export class FormOrder extends Form<IFormActions> { 
+export class FormOrder extends Form<IFormOrderActions> { 
     protected _paymentCard: HTMLButtonElement; 
     protected _paymentCash: HTMLButtonElement; 
     protected _addressInput: HTMLInputElement; 
     protected _submitButton: HTMLButtonElement; 
  
-    constructor(container: HTMLElement, actions: IFormActions, protected events: any) { 
+    constructor(container: HTMLElement, actions: IFormOrderActions, protected events: any) { 
         super(container, actions); 
          
         this._paymentCard = ensureElement<HTMLButtonElement>('button[name="card"]', container); 
@@ -26,23 +26,36 @@ export class FormOrder extends Form<IFormActions> {
         } else { 
             this._paymentCash.classList.add('button_alt-active'); 
             this._paymentCard.classList.remove('button_alt-active'); 
-        } 
+        }
+        this.enableSubmitButton();
     } 
  
     set address(value: string) { 
         this._addressInput.value = value; 
+        this.enableSubmitButton();
     } 
  
     set submitButtonDisabled(value: boolean) { 
         this._submitButton.disabled = value; 
     }
 
-    // Реализация абстрактного метода из Form
+    enableSubmitButton(): void {
+        const isAddressFilled = this._addressInput.value.trim() !== '';
+        const isPaymentSelected = this._paymentCard.classList.contains('button_alt-active') || 
+                                 this._paymentCash.classList.contains('button_alt-active');
+        
+        this.submitButtonDisabled = !(isAddressFilled && isPaymentSelected);
+    }
+
+    isAddressValid(errors: { address?: string }): void {
+        this.setErrors(errors);
+        this.enableSubmitButton();
+    }
+
     checkErrors(): boolean {
         return true;
     }
 
-    // Реализация метода clearErrors из Form
     clearErrors(): void {
         this.clearFieldError(this._addressInput);
     }
@@ -54,7 +67,6 @@ export class FormOrder extends Form<IFormActions> {
         }
     }
 
-    // Метод для установки ошибки поля
     protected setFieldError(field: HTMLInputElement, error: string): void {
         field.classList.add('form__input_error');
         const errorElement = field.parentElement?.querySelector('.form__error');
@@ -63,7 +75,6 @@ export class FormOrder extends Form<IFormActions> {
         }
     }
 
-    // Метод для очистки ошибки поля
     protected clearFieldError(field: HTMLInputElement): void {
         field.classList.remove('form__input_error');
         const errorElement = field.parentElement?.querySelector('.form__error');
@@ -77,23 +88,31 @@ export class FormOrder extends Form<IFormActions> {
  
         if (this._paymentCard) { 
             this._paymentCard.addEventListener('click', () => { 
-                this.events.emit('form:payment-change', 'card');
+                this.payment = 'card';
+                if (this.actions.onPaymentSelect) {
+                    this.actions.onPaymentSelect('card');
+                }
             }); 
         } 
  
         if (this._paymentCash) { 
             this._paymentCash.addEventListener('click', () => { 
-                this.events.emit('form:payment-change', 'cash');
+                this.payment = 'cash';
+                if (this.actions.onPaymentSelect) {
+                    this.actions.onPaymentSelect('cash');
+                }
             }); 
         } 
  
         if (this._addressInput) { 
             this._addressInput.addEventListener('input', () => { 
-                this.events.emit('form:address-change', this._addressInput.value); 
+                this.enableSubmitButton();
+                if (this.actions.onAddressInput) {
+                    this.actions.onAddressInput(this._addressInput.value);
+                }
             }); 
         } 
  
-        // Обработчик отправки формы 
         if (this._submitButton) { 
             this._submitButton.addEventListener('click', (event) => { 
                 event.preventDefault(); 
@@ -106,6 +125,7 @@ export class FormOrder extends Form<IFormActions> {
  
     render(data?: any): HTMLElement { 
         Object.assign(this as object, data ?? {}); 
+        this.enableSubmitButton();
         return this.container; 
     }
 }
